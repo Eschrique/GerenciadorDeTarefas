@@ -7,12 +7,11 @@ namespace GerenciadorDeTarefas.Infrastructure.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Tarefa> Tarefas { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configurações para a entidade Usuario
             modelBuilder.Entity<Usuario>()
                 .HasKey(u => u.Id);
 
@@ -21,7 +20,6 @@ namespace GerenciadorDeTarefas.Infrastructure.Data
                 .WithOne(t => t.Usuario)
                 .HasForeignKey(t => t.UsuarioId);
 
-            // Configurações para a entidade Tarefa
             modelBuilder.Entity<Tarefa>()
                 .HasKey(t => t.Id);
 
