@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using GerenciadorDeTarefas.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,12 +21,5 @@ if (app.Environment.IsDevelopment())
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
-
-// Aplica as migrações pendentes e cria o banco de dados
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    dbContext.Database.Migrate();
-}
 
 app.Run();
