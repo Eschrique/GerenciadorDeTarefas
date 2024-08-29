@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using GerenciadorDeTarefas.Infrastructure.Data;
+using GerenciadorDeTarefas.Application.Services;
 using GerenciadorDeTarefas.Domain.Entities;
 using Swashbuckle.AspNetCore.Annotations;
+using System;
+using System.Threading.Tasks;
 
 namespace GerenciadorDeTarefas.Api.Controllers
 {
@@ -10,46 +11,33 @@ namespace GerenciadorDeTarefas.Api.Controllers
     [ApiController]
     public class TarefasController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly TarefaService _tarefaService;
 
-        public TarefasController(AppDbContext context)
+        public TarefasController(TarefaService tarefaService)
         {
-            _context = context;
+            _tarefaService = tarefaService;
         }
 
         [HttpPost]
         [SwaggerOperation(Summary = "Cria uma nova tarefa", Description = "Adiciona uma nova tarefa ao banco de dados.")]
         public async Task<IActionResult> Post([FromBody] Tarefa tarefa)
         {
-            if (tarefa == null)
+            try
             {
-                return BadRequest("Tarefa é obrigatória.");
+                await _tarefaService.CreateTarefaAsync(tarefa);
+                return CreatedAtAction(nameof(Get), new { id = tarefa.Id }, tarefa);
             }
-
-            if (tarefa.UsuarioId <= 0)
+            catch (ArgumentException ex)
             {
-                return BadRequest("UsuarioId é obrigatório.");
+                return BadRequest(ex.Message);
             }
-
-            var usuario = await _context.Usuarios.FindAsync(tarefa.UsuarioId);
-            if (usuario == null)
-            {
-                return BadRequest("Usuario não encontrado.");
-            }
-
-            _context.Tarefas.Add(tarefa);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(Get), new { id = tarefa.Id }, tarefa);
         }
 
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Obtém uma tarefa pelo ID", Description = "Recupera uma tarefa existente com base no ID fornecido.")]
         public async Task<IActionResult> Get(int id)
         {
-            var tarefa = await _context.Tarefas
-                .Include(t => t.Usuario)
-                .FirstOrDefaultAsync(t => t.Id == id);
-
+            var tarefa = await _tarefaService.GetTarefaByIdAsync(id);
             if (tarefa == null)
             {
                 return NotFound();
@@ -67,48 +55,30 @@ namespace GerenciadorDeTarefas.Api.Controllers
                 return BadRequest("ID da tarefa não corresponde.");
             }
 
-            var tarefaExistente = await _context.Tarefas
-                .Include(t => t.Usuario)
-                .FirstOrDefaultAsync(t => t.Id == id);
-
-            if (tarefaExistente == null)
+            try
             {
-                return NotFound();
+                await _tarefaService.UpdateTarefaAsync(tarefa);
+                return NoContent();
             }
-
-            if (tarefa.UsuarioId != tarefaExistente.UsuarioId)
+            catch (ArgumentException ex)
             {
-                var usuario = await _context.Usuarios.FindAsync(tarefa.UsuarioId);
-                if (usuario == null)
-                {
-                    return BadRequest("Usuario não encontrado.");
-                }
+                return BadRequest(ex.Message);
             }
-
-            tarefaExistente.Titulo = tarefa.Titulo;
-            tarefaExistente.Descricao = tarefa.Descricao;
-            tarefaExistente.UsuarioId = tarefa.UsuarioId;
-
-            _context.Entry(tarefaExistente).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
         [HttpDelete("{id}")]
         [SwaggerOperation(Summary = "Remove uma tarefa", Description = "Remove uma tarefa existente com base no ID fornecido.")]
         public async Task<IActionResult> Delete(int id)
         {
-            var tarefa = await _context.Tarefas.FindAsync(id);
-            if (tarefa == null)
+            try
             {
-                return NotFound();
+                await _tarefaService.DeleteTarefaAsync(id);
+                return NoContent();
             }
-
-            _context.Tarefas.Remove(tarefa);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }

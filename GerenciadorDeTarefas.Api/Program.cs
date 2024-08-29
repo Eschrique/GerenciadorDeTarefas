@@ -5,20 +5,42 @@ using GerenciadorDeTarefas.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using GerenciadorDeTarefas.Domain.Interfaces;
+using Serilog;
+using GerenciadorDeTarefas.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuração do DbContext
+// Configuração do Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.Console()
+    .CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog();
+
+// Configuração do DbContext para usar o banco de dados em memória (ajuste para o banco de dados real em produção)
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseInMemoryDatabase("InMemoryDb"));
 
 // Configuração dos serviços
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-        options.JsonSerializerOptions.MaxDepth = 64; // Ajuste se necessário
+        options.JsonSerializerOptions.MaxDepth = 64;
     });
+
+// Adicionar repositórios
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<ITarefaRepository, TarefaRepository>();
+
+// Adicionar serviços de aplicação
+builder.Services.AddScoped<UsuarioService>();
+builder.Services.AddScoped<TarefaService>();
+
+// Configuração do Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -31,9 +53,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Habilitar HTTPS (opcional, dependendo do ambiente)
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
 app.UseRouting();
+
 app.UseAuthorization();
 
 app.MapControllers();
