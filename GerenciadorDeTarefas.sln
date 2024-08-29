@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerenciadorDeTarefas.Infras
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerenciadorDeTarefas.Application", "GerenciadorDeTarefas.Application\GerenciadorDeTarefas.Application.csproj", "{55441A0B-BA00-418C-9BEA-BECB6683021C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerenciadorDeTarefas.Tests", "GerenciadorDeTarefas.Tests\GerenciadorDeTarefas.Tests.csproj", "{D7148441-8E1F-443F-8A1F-EACCC716A2E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,5 +42,9 @@ Global
 		{54B30243-BC92-425C-9EC7-316CF65E479A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54B30243-BC92-425C-9EC7-316CF65E479A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54B30243-BC92-425C-9EC7-316CF65E479A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7148441-8E1F-443F-8A1F-EACCC716A2E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7148441-8E1F-443F-8A1F-EACCC716A2E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7148441-8E1F-443F-8A1F-EACCC716A2E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7148441-8E1F-443F-8A1F-EACCC716A2E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
