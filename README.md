@@ -10,14 +10,12 @@ O projeto é organizado nas seguintes camadas:
 - **GerenciadorDeTarefas.Application**: Contém as regras de negócio e os casos de uso do sistema.
 - **GerenciadorDeTarefas.Domain**: Define as entidades principais e interfaces do domínio.
 - **GerenciadorDeTarefas.Infrastructure**: Implementa os repositórios e a comunicação com o banco de dados.
-- **GerenciadorDeTarefas.Tests**: Conjunto de testes automatizados para garantir a qualidade do código.
 
 ## Tecnologias Utilizadas
 
 - **.NET 8**
 - **Entity Framework Core**: Para comunicação com o banco de dados.
 - **Swagger**: Para documentação automática da API.
-- **xUnit**: Para testes automatizados.
 
 ## Endpoints da API
 
